@@ -3,6 +3,8 @@
 #include <time.h>
 #include "main.h"
 
+#define FACTION_NUMBER 86
+
 int main(void) {
     int player_number = 0;
     int picks = 0;
@@ -46,10 +48,10 @@ void draft(int picks, int player_number, int* draft_array, int j){
     int i;
     int random_pick;
     for(i = 0; i < picks; i++) {
-        random_pick = (rand() % 86) + 1;
+        random_pick = (rand() % FACTION_NUMBER) + 1;
 
         while(!pickUnique(random_pick, draft_array, picks, player_number)){
-            random_pick = (rand() % 86) + 1;
+            random_pick = (rand() % FACTION_NUMBER) + 1;
         }
         draft_array[indexFromCoords(i, j, picks)] = random_pick;
     }
