@@ -1,35 +1,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-
-int draft(int picks, int player){
-    // Generates a draft for one player
-    int i = 0;
-    int draft_array[picks];
-    while(i < picks) {
-        draft_array[i] = rand() % 86 + 1;
-        i++;
-    }
-
-    // Prints the draft
-    printf("Player %i chooses from: ", player);
-    i = 0;
-    while(i < picks) {
-        printf("%i ", draft_array[i]);
-        i++;
-    }
-    printf("\n");
-
-    return draft_array[0];
-}
+#include "main.h"
 
 int main(void) {
     int player_number = 0;
+    int picks = 0;
+    int i, j;
 
     printf("How many players?\n");
     scanf("%i", &player_number);
-
-    int picks = 0;
 
     printf("How many picks per player?\n");
     scanf("%i", &picks);
@@ -38,12 +18,51 @@ int main(void) {
 
     srand(time(0));
 
+    int draft_array[picks * player_number];
 
-    int i = 1;
-    while(i < player_number+1){
-        draft(picks, i);
-        i++;
+    for(i = 0; i < picks; i++)
+        for(j = 0; j < player_number; j++){
+            draft_array[indexFromCoords(i, j, picks)] = 0;
+        }
+
+    for(j = 0; j < player_number; j++){
+        draft(picks, player_number, draft_array, j);
+    }
+
+    // Print the draft
+    for(j = 0; j < player_number; j++) {
+        printf("Player %i picks from:", j+1);
+        for (i = 0; i < picks; i++) {
+            printf(" %i", draft_array[indexFromCoords(i, j, picks)]);
+        }
+        printf("\n");
     }
 
     return 0;
+}
+
+void draft(int picks, int player_number, int* draft_array, int j){
+    // Generates a draft for one player
+    int i;
+    int random_pick;
+    for(i = 0; i < picks; i++) {
+        random_pick = (rand() % 86) + 1;
+
+        while(!pickUnique(random_pick, draft_array, picks, player_number)){
+            random_pick = (rand() % 86) + 1;
+        }
+        draft_array[indexFromCoords(i, j, picks)] = random_pick;
+    }
+}
+
+int pickUnique(int random_pick, int draft_array[], int picks, int player_number){
+    for(int i = 0; i < picks; i++)
+        for(int j = 0; j < player_number; j++){
+        if(random_pick == draft_array[indexFromCoords(i, j, picks)]) return 0;
+        }
+    return 1;
+}
+
+int indexFromCoords(int i, int j, int picks){
+    return j * picks + i;
 }
